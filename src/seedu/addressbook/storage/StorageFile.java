@@ -83,7 +83,10 @@ public class StorageFile {
      *
      * @throws StorageOperationException if there were errors converting and/or storing data to file.
      */
-    public void save(AddressBook addressBook) throws StorageOperationException {
+    public void save(AddressBook addressBook, Boolean... createIfMissing) throws StorageOperationException {
+    	if (!path.toFile().exists() && !(createIfMissing.length > 0 && createIfMissing[0] == true)) {
+    		throw new StorageOperationException("Error saving to file: Storage file was deleted.");
+    	}
 
         /* Note: Note the 'try with resource' statement below.
          * More info: https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
@@ -128,7 +131,7 @@ public class StorageFile {
         // create empty file if not found
         } catch (FileNotFoundException fnfe) {
             final AddressBook empty = new AddressBook();
-            save(empty);
+            save(empty, true);
             return empty;
 
         // other errors
